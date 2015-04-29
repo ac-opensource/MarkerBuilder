@@ -47,7 +47,7 @@ repositories {
     }
 }
 dependencies {
-    compile 'com.github.a-ar:MarkerBuilder:v1.0.0'
+    compile 'com.github.ac-opensource:MarkerBuilder:v1.0.0'
 }
 ```
 
@@ -68,4 +68,4 @@ License
     See the License for the specific language governing permissions and
     limitations under the License.
     
-[JitPack]:https://jitpack.io/#a-ar/MarkerBuilder/v1.0.0
+[JitPack]:https://jitpack.io/#ac-opensource/MarkerBuilder/v1.0.0
