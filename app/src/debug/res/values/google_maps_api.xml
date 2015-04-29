@@ -1,0 +1,18 @@
+<resources>
+    <!--
+    TODO: Before you run your application, you need a Google Maps API key.
+
+    To get one, follow this link, follow the directions and press "Create" at the end:
+
+https://console.developers.google.com/flows/enableapi?apiid=maps_android_backend&keyType=CLIENT_SIDE_ANDROID&r=DB:49:13:4B:BC:30:01:8B:5E:FF:98:FB:28:FA:D4:3C:90:79:FD:7D%3Bcom.aconcepcion.markerbuilder
+
+    You can also add your credentials to an existing key, using this line:
+    DB:49:13:4B:BC:30:01:8B:5E:FF:98:FB:28:FA:D4:3C:90:79:FD:7D;com.aconcepcion.markerbuilder
+
+    Once you have your key (it starts with "AIza"), replace the "google_maps_key"
+    string in this file.
+    -->
+    <string name="google_maps_key" translatable="false" templateMergeStrategy="preserve">
+        AIzaSyA0SKYpzdUhe_XMcGyXiKn5RpTLlMFLiL8
+    </string>
+</resources>
