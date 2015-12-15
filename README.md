@@ -3,6 +3,8 @@ Versatile map area / geofence utility for google maps v2 for android.
 Create geofence areas in your map by initializing markerBuilderManager.
 Not that difficult isn't it?
 
+![Marker Demo](https://cloud.githubusercontent.com/assets/7637791/11803625/9a6946b2-a337-11e5-96d2-36a908f8aa8c.png)
+
 Usage
 ------
 ```java
