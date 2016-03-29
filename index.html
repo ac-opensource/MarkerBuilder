@@ -1,0 +1,112 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <title>Markerbuilder by ac-opensource</title>
+
+    <link rel="stylesheet" href="stylesheets/styles.css">
+    <link rel="stylesheet" href="stylesheets/github-light.css">
+    <meta name="viewport" content="width=device-width">
+    <!--[if lt IE 9]>
+    <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+  </head>
+  <body>
+    <div class="wrapper">
+      <header>
+        <h1>Markerbuilder</h1>
+        <p>Versatile map area / geofence utility for google maps v2 for android</p>
+
+        <p class="view"><a href="https://github.com/ac-opensource/MarkerBuilder">View the Project on GitHub <small>ac-opensource/MarkerBuilder</small></a></p>
+
+
+        <ul>
+          <li><a href="https://github.com/ac-opensource/MarkerBuilder/zipball/master">Download <strong>ZIP File</strong></a></li>
+          <li><a href="https://github.com/ac-opensource/MarkerBuilder/tarball/master">Download <strong>TAR Ball</strong></a></li>
+          <li><a href="https://github.com/ac-opensource/MarkerBuilder">View On <strong>GitHub</strong></a></li>
+        </ul>
+      </header>
+      <section>
+        <h3>
+<a id="introduction" class="anchor" href="#introduction" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Introduction</h3>
+
+<p>Versatile map area / geofence utility for google maps v2 for android. Create geofence areas in your map by initializing markerBuilderManager. Not that difficult isn't it?</p>
+
+<p><img src="https://cloud.githubusercontent.com/assets/7637791/11803625/9a6946b2-a337-11e5-96d2-36a908f8aa8c.png" alt=""></p>
+
+<h3>
+<a id="usage" class="anchor" href="#usage" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Usage</h3>
+
+<p><code>private void setUpMap() {</code>
+  <code>markerBuilderManager = new MarkerBuilderManagerV2.Builder(this)</code>
+          <code>.map(mMap) // required</code>
+          <code>.build();</code>
+<code>}</code></p>
+
+<p>You can also set other marker options such as:</p>
+
+<p><code>markerBuilderManager = new MarkerBuilderManagerV2.Builder(this)</code>
+          <code>.map(googleMap)</code>
+          <code>.enabled(isEnabled)</code>
+          <code>.radius(initRadiusMetersFinal)</code>
+          <code>.circleId(circleId)</code>
+          <code>.strokeWidth(strokeWidth)</code>
+          <code>.strokeColor(strokeColor)</code>
+          <code>.fillColor(fillColor)</code>
+          <code>.minRadius(minRadius)</code>
+          <code>.maxRadius(maxRadius)</code>
+          <code>.centerIcon(centerIcon)</code>
+          <code>.centerBitmap(centerBitmap)</code>
+          <code>.resizerIcon(resizerIcon)</code>
+          <code>.centerOffsetHorizontal(centerOffsetHorizontal)</code>
+          <code>.centerOffsetVertical(centerOffsetVertical)</code>
+          <code>.build();</code></p>
+
+<h3>
+<a id="configuration" class="anchor" href="#configuration" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Configuration</h3>
+
+<p>There is no pre-configuration needed. :)</p>
+
+<h3>
+<a id="download" class="anchor" href="#download" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Download</h3>
+
+<p>Add the following code to your <code>build.gradle</code> file (as described on <a href="https://jitpack.io/#ac-opensource/MarkerBuilder/v1.0.0">JitPack</a>)</p>
+
+<pre><code>repositories {
+    maven {
+        url "https://jitpack.io"
+    }
+}
+dependencies {
+    compile 'com.github.ac-opensource:MarkerBuilder:v1.0.0'
+}
+</code></pre>
+
+<h2>
+<a id="license" class="anchor" href="#license" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>License</h2>
+
+<pre><code>Copyright 2015 A-Ar Andrew Concepcion
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+   http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+</code></pre>
+      </section>
+      <footer>
+        <p>This project is maintained by <a href="https://github.com/ac-opensource">ac-opensource</a></p>
+        <p><small>Hosted on GitHub Pages &mdash; Theme by <a href="https://github.com/orderedlist">orderedlist</a></small></p>
+      </footer>
+    </div>
+    <script src="javascripts/scale.fix.js"></script>
+    
+  </body>
+</html>
