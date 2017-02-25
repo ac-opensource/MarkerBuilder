@@ -6,15 +6,9 @@ package com.aconcepcion.geofencemarkerbuilder;
 public class MarkerMoveResultWithCircle {
     GeofenceCircle.MarkerMoveResult markerMoveResult;
     GeofenceCircle circle;
-    MapDataPointWrapper dataPointWrapper;
 
     public MarkerMoveResultWithCircle(GeofenceCircle.MarkerMoveResult markerMoveResult, GeofenceCircle circle) {
         this.markerMoveResult = markerMoveResult;
         this.circle = circle;
-    }
-
-    public MarkerMoveResultWithCircle(GeofenceCircle.MarkerMoveResult markerMoveResult, MapDataPointWrapper dataPointWrapper) {
-        this.markerMoveResult = markerMoveResult;
-        this.dataPointWrapper = dataPointWrapper;
     }
 }

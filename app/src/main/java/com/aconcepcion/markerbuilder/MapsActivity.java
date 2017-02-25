@@ -19,7 +19,6 @@ public class MapsActivity extends FragmentActivity implements OnMapClickListener
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_maps);
-        setUpMapIfNeeded();
     }
 
     @Override
@@ -47,12 +46,12 @@ public class MapsActivity extends FragmentActivity implements OnMapClickListener
         // Do a null check to confirm that we have not already instantiated the map.
         if (mMap == null) {
             // Try to obtain the map from the SupportMapFragment.
-            mMap = ((SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map))
-                    .getMap();
-            // Check if we were successful in obtaining the map.
-            if (mMap != null) {
-                setUpMap();
-            }
+             ((SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map)).getMapAsync(googleMap -> {
+                 mMap = googleMap;
+                 if (mMap != null) {
+                     setUpMap();
+                 }
+             });
         }
     }
 

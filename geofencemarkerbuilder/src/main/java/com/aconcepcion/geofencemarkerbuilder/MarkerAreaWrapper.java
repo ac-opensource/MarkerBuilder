@@ -34,14 +34,12 @@ import java.util.ArrayList;
  * 
  */
 
-
 public class MarkerAreaWrapper {
 
     public static final String GEOFENCE_WRAPPER = "geofence";
     public static final String DATA_POINT_WRAPPER = "dataPoint";
 
     private Marker centerMarker;
-
     private Marker radiusMarker;
     private Circle circle;
 
@@ -59,7 +57,6 @@ public class MarkerAreaWrapper {
 
     private int minRadiusMeters = -1;
     private int maxRadiusMeters = -1;
-
 
     private Context context;
 
@@ -207,8 +204,6 @@ public class MarkerAreaWrapper {
             centerMarker.setIcon(BitmapDescriptorFactory.fromBitmap(scaledBitmap));
         }
     }
-
-
 
     public static Bitmap drawableToBitmap (Drawable drawable) {
         Bitmap bitmap = Bitmap.createBitmap(drawable.getIntrinsicWidth(), drawable.getIntrinsicHeight(), Bitmap.Config.ARGB_8888);

@@ -17,7 +17,6 @@ import java.util.List;
  */
 public class MarkerBuilderManagerV2 implements GoogleMap.OnMarkerClickListener, GoogleMap.OnMarkerDragListener, GoogleMap.OnMapLongClickListener, GoogleMap.OnMapClickListener {
 
-
     private final Context context;
     private final GoogleMap googleMap;
     private final boolean isEnabled;
@@ -276,9 +275,7 @@ public class MarkerBuilderManagerV2 implements GoogleMap.OnMarkerClickListener, 
     }
 
     public void plotPoints(LatLng point, Integer radius, long circularGeofenceId, int fillColor) {
-
         GeofenceCircle circle = addSavedPoint(point, radius, circularGeofenceId, fillColor);
-
         if(circleManagerListener != null) circleManagerListener.onInitCreateCircle(circle);
 
     }
