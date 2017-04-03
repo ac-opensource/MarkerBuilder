@@ -49,7 +49,7 @@ repositories {
     }
 }
 dependencies {
-    compile 'com.github.ac-opensource:MarkerBuilder:v1.0.0'
+    compile 'com.github.ac-opensource:MarkerBuilder:v1.0.8'
 }
 ```
 
