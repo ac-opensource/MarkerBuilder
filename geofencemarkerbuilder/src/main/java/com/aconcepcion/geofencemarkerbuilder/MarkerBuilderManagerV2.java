@@ -33,6 +33,7 @@ public class MarkerBuilderManagerV2 implements GoogleMap.OnMarkerClickListener, 
     private final float centerOffsetHorizontal;
     private final float centerOffsetVertical;
     private final CircleManagerListener circleManagerListener;
+    private final GeofenceCircle defaultCircle;
 
     private List<GeofenceCircle> areas = new ArrayList<>(1);
     private List<GeofenceCircle> savedPoints = new ArrayList<>(1);
@@ -57,6 +58,7 @@ public class MarkerBuilderManagerV2 implements GoogleMap.OnMarkerClickListener, 
         private float resizerOffsetHorizontal = 0.5f;
         private float resizerOffsetVertical = 0.5f;
         private CircleManagerListener circleManagerListener;
+        private GeofenceCircle defaultCircle;
 
         public Builder(Context context) {
             this.context = context;
@@ -146,7 +148,24 @@ public class MarkerBuilderManagerV2 implements GoogleMap.OnMarkerClickListener, 
             this.resizerOffsetVertical = resizerOffsetVertical;
             return this;
         }
-        public MarkerBuilderManagerV2 build(){
+
+        public MarkerBuilderManagerV2 build() {
+            defaultCircle = new GeofenceCircle.Builder(context)
+                    .map(googleMap)
+                    .enabled(isEnabled)
+                    .circleId(circleId)
+                    .strokeWidth(strokeWidth)
+                    .strokeColor(strokeColor)
+                    .fillColor(fillColor)
+                    .minRadius(minRadius)
+                    .maxRadius(maxRadius)
+                    .centerIcon(centerIcon)
+                    .centerBitmap(centerBitmap)
+                    .resizerIcon(resizerIcon)
+                    .centerOffsetHorizontal(centerOffsetHorizontal)
+                    .centerOffsetVertical(centerOffsetVertical)
+                    .center(new LatLng(0, 0))
+                    .build();
             return new MarkerBuilderManagerV2(this);
         }
     }
@@ -168,6 +187,9 @@ public class MarkerBuilderManagerV2 implements GoogleMap.OnMarkerClickListener, 
         this.resizerIcon            =   b.resizerIcon;
         this.centerOffsetHorizontal =   b.centerOffsetHorizontal;
         this.centerOffsetVertical   =   b.centerOffsetVertical;
+        this.defaultCircle          =   b.defaultCircle;
+
+        clearCircles();
 
         googleMap.setOnMarkerDragListener(this);
         googleMap.setOnMapLongClickListener(this);
@@ -186,12 +208,12 @@ public class MarkerBuilderManagerV2 implements GoogleMap.OnMarkerClickListener, 
         GeofenceCircle.MarkerMoveResult result = GeofenceCircle.MarkerMoveResult.none;
         GeofenceCircle affectedDraggableCircle = null;
 
-        ArrayList<GeofenceCircle> allMarkers = new ArrayList<>();
+        List<GeofenceCircle> allMarkers = new ArrayList<>();
         allMarkers.addAll(areas);
         allMarkers.addAll(savedPoints);
         allMarkers.addAll(savedDataPoints);
 
-        for(int i = 0; i < allMarkers.size(); i++) {
+        for (int i = 0; i < allMarkers.size(); i++) {
             GeofenceCircle draggableCircle = allMarkers.get(i);
             result = draggableCircle.onMarkerMoved(marker);
             if (result != GeofenceCircle.MarkerMoveResult.none) {
@@ -208,17 +230,17 @@ public class MarkerBuilderManagerV2 implements GoogleMap.OnMarkerClickListener, 
      */
     public void clearCircles() {
 
-        for(int i = 0; i < areas.size(); i++) {
+        for (int i = 0; i < areas.size(); i++) {
             getCircles().get(i).removeArea();
         }
     }
 
     public void removeCircle(long geofenceCircleId) {
 
-        for(int i = 0; i < savedPoints.size(); i++) {
+        for (int i = 0; i < savedPoints.size(); i++) {
 
             GeofenceCircle savedCircle = savedPoints.get(i);
-            if(savedCircle.getCircleId() == geofenceCircleId){
+            if (savedCircle.getCircleId() == geofenceCircleId) {
                 savedCircle.removeArea();
                 break;
             }
@@ -227,7 +249,7 @@ public class MarkerBuilderManagerV2 implements GoogleMap.OnMarkerClickListener, 
 
     public void clearSavedCircles() {
 
-        for(int i = 0; i < savedPoints.size(); i++) {
+        for (int i = 0; i < savedPoints.size(); i++) {
             GeofenceCircle oldCircle = savedPoints.get(i);
             oldCircle.removeArea();
         }
@@ -235,48 +257,35 @@ public class MarkerBuilderManagerV2 implements GoogleMap.OnMarkerClickListener, 
     }
 
     public void markThis(LatLng point, boolean isSaved) {
-
-        clearCircles();
-        double initRadiusMetersFinal;
-
-        if(radius == 0) {
-            Point screenCenterPoint = googleMap.getProjection().toScreenLocation(point);
-            LatLng radiusLatLng = googleMap.getProjection().fromScreenLocation(new Point(screenCenterPoint.x + (int)radius, screenCenterPoint.y));
-            initRadiusMetersFinal = MarkerAreasUtils.toRadiusMeters(point, radiusLatLng);
-        } else {
-            initRadiusMetersFinal = radius;
-        }
-
-        GeofenceCircle geofenceCircle = new GeofenceCircle.Builder(context)
-                .map(googleMap)
-                .enabled(isEnabled)
-                .radius(initRadiusMetersFinal)
-                .circleId(circleId)
-                .strokeWidth(strokeWidth)
-                .strokeColor(strokeColor)
-                .fillColor(fillColor)
-                .minRadius(minRadius)
-                .maxRadius(maxRadius)
-                .centerIcon(centerIcon)
-                .centerBitmap(centerBitmap)
-                .resizerIcon(resizerIcon)
-                .centerOffsetHorizontal(centerOffsetHorizontal)
-                .centerOffsetVertical(centerOffsetVertical)
-                .center(point)
-                .build();
-
-        if(!isSaved) {
-            areas.add(geofenceCircle);
-        } else {
-            savedPoints.add(geofenceCircle);
-        }
-
-        if(circleManagerListener != null) circleManagerListener.onCreateCircle(geofenceCircle);
+        markThis(GeofenceCircle.newBuilder(defaultCircle).center(point).build(), isSaved);
     }
+
+    public void markThis(GeofenceCircle circle, boolean isSaved) {
+        clearCircles();
+        if (radius == 0) {
+            double initRadiusMetersFinal;
+            Point screenCenterPoint = googleMap.getProjection().toScreenLocation(circle.getCenter());
+            LatLng radiusLatLng = googleMap.getProjection().fromScreenLocation(new Point(screenCenterPoint.x + 100, screenCenterPoint.y));
+            initRadiusMetersFinal = MarkerAreasUtils.toRadiusMeters(circle.getCenter(), radiusLatLng);
+            circle.setRadius(initRadiusMetersFinal);
+        }
+        circle.plot();
+        if (isSaved) {
+            savedPoints.add(circle);
+        } else {
+            areas.add(circle);
+        }
+        if (circleManagerListener != null) circleManagerListener.onCreateCircle(circle);
+    }
+
+    public void markThis(LatLng point, boolean isSaved, int fillColor, int centerColor) {
+        markThis(GeofenceCircle.newBuilder(defaultCircle).center(point).fillColor(fillColor).centerColor(centerColor).build(), isSaved);
+    }
+
 
     public void plotPoints(LatLng point, Integer radius, long circularGeofenceId, int fillColor) {
         GeofenceCircle circle = addSavedPoint(point, radius, circularGeofenceId, fillColor);
-        if(circleManagerListener != null) circleManagerListener.onInitCreateCircle(circle);
+        if (circleManagerListener != null) circleManagerListener.onInitCreateCircle(circle);
 
     }
 
@@ -306,8 +315,14 @@ public class MarkerBuilderManagerV2 implements GoogleMap.OnMarkerClickListener, 
                 .center(savedPoint)
                 .build();
 
+        circle.plot();
+
         savedPoints.add(circle);
         return circle;
+    }
+
+    public GeofenceCircle getDefaultCircle() {
+        return defaultCircle;
     }
 
     public List<GeofenceCircle> getCircles() {
@@ -327,7 +342,7 @@ public class MarkerBuilderManagerV2 implements GoogleMap.OnMarkerClickListener, 
     @Override
     public boolean onMarkerClick(Marker marker) {
 
-        if(circleManagerListener == null) return false;
+        if (circleManagerListener == null) return false;
         MarkerMoveResultWithCircle result = onMarkerMoved(marker);
         circleManagerListener.onCircleMarkerClick(result.circle);
         return false;
@@ -336,7 +351,7 @@ public class MarkerBuilderManagerV2 implements GoogleMap.OnMarkerClickListener, 
     @Override
     public void onMarkerDragStart(Marker marker) {
         MarkerMoveResultWithCircle result = onMarkerMoved(marker);
-        if(circleManagerListener == null) return;
+        if (circleManagerListener == null) return;
         switch (result.markerMoveResult) {
             case minRadius: {
                 circleManagerListener.onMinRadius(result.circle);
@@ -354,14 +369,15 @@ public class MarkerBuilderManagerV2 implements GoogleMap.OnMarkerClickListener, 
                 circleManagerListener.onMoveCircleStart(result.circle);
                 break;
             }
-            default: break;
+            default:
+                break;
         }
     }
 
     @Override
     public void onMarkerDrag(Marker marker) {
         MarkerMoveResultWithCircle result = onMarkerMoved(marker);
-        if(circleManagerListener == null) return;
+        if (circleManagerListener == null) return;
         switch (result.markerMoveResult) {
             case minRadius: {
                 circleManagerListener.onMinRadius(result.circle);
@@ -371,14 +387,15 @@ public class MarkerBuilderManagerV2 implements GoogleMap.OnMarkerClickListener, 
                 circleManagerListener.onMaxRadius(result.circle);
                 break;
             }
-            default: break;
+            default:
+                break;
         }
     }
 
     @Override
     public void onMarkerDragEnd(Marker marker) {
         MarkerMoveResultWithCircle result = onMarkerMoved(marker);
-        if(circleManagerListener == null) return;
+        if (circleManagerListener == null) return;
         switch (result.markerMoveResult) {
             case minRadius: {
                 circleManagerListener.onMinRadius(result.circle);
@@ -396,7 +413,8 @@ public class MarkerBuilderManagerV2 implements GoogleMap.OnMarkerClickListener, 
                 circleManagerListener.onMoveCircleEnd(result.circle);
                 break;
             }
-            default: break;
+            default:
+                break;
         }
     }
 }

@@ -26,20 +26,11 @@ import com.google.android.gms.maps.model.MarkerOptions;
  * Created by andrewconcepcion on 4/20/15.
  */
 public class GeofenceCircle {
-//    private final int size;
-
     public static final String GEOFENCE_WRAPPER = "geofence";
     public static final String DATA_POINT_WRAPPER = "dataPoint";
 
-    public long getCircleId() {
-        return circleId;
-    }
-
-    public static enum MarkerMoveResult {moved, radiusChange, minRadius, maxRadius, none;};
-    public static enum MarkerType {move, resize, none;}
-
-
-    private static Bitmap centerBitmapCache;
+    public enum MarkerMoveResult {moved, radiusChange, minRadius, maxRadius, none;}
+    public enum MarkerType {move, resize, none;}
 
     private Context context;
     private GoogleMap map;
@@ -53,40 +44,65 @@ public class GeofenceCircle {
     private int minRadius;
     private int maxRadius;
     private int centerIcon;
+    private int centerColor;
     private Bitmap centerBitmap;
     private int resizerIcon;
     private float centerOffsetHorizontal;
     private float centerOffsetVertical;
+    private float resizerOffsetHorizontal;
+    private float resizerOffsetVertical;
 
     private Marker centerMarker;
     private Marker resizerMarker;
     private Circle circle;
 
+    public static Builder newBuilder(Context context) {
+        return new Builder(context);
+    }
+
+    public static Builder newBuilder(GeofenceCircle copy) {
+        Builder builder = new Builder();
+        builder.context = copy.context;
+        builder.map = copy.map;
+        builder.isEnabled = copy.isEnabled;
+        builder.center = copy.center;
+        builder.radius = copy.radius;
+        builder.circleId = copy.circleId;
+        builder.strokeWidth = copy.strokeWidth;
+        builder.strokeColor = copy.strokeColor;
+        builder.fillColor = copy.fillColor;
+        builder.minRadius = copy.minRadius;
+        builder.maxRadius = copy.maxRadius;
+        builder.centerIcon = copy.centerIcon;
+        builder.centerBitmap = copy.centerBitmap;
+        builder.resizerIcon = copy.resizerIcon;
+        builder.centerOffsetHorizontal = copy.centerOffsetHorizontal;
+        builder.centerOffsetVertical = copy.centerOffsetVertical;
+        builder.centerMarker = copy.centerMarker;
+        builder.resizerMarker = copy.resizerMarker;
+        builder.circle = copy.circle;
+        return builder;
+    }
 
     public static class Builder {
-
 
         private static int DEFAULT_FILL_COLOR = 0xff0000ff;
         private static int DEFAULT_STROKE_COLOR = 0xff000000;
         private static int DEFAULT_STROKE_WIDTH = 1;
 
-
-        //required
-//        private final int size;
-
-        //optional
         private Context context;
         private GoogleMap map;
         private boolean isEnabled;
         private LatLng center;
         private double radius = new MarkerAreaMeasure(200, MarkerAreaMeasure.Unit.meters).value;
         private long circleId;
-        private int fillColor = Color.HSVToColor(70, new float[] {1, 1, 200});
+        private int fillColor = Color.HSVToColor(35, new float[]{1, 1, 200});
         private float strokeWidth = 4f;
         private int strokeColor = Color.RED;
         private int minRadius = -1;
         private int maxRadius = -1;
         private int centerIcon = android.R.drawable.ic_menu_mylocation;
+        private int centerColor = Color.RED;
         private int resizerIcon = android.R.drawable.ic_menu_mylocation;
         private Bitmap centerBitmap;
         private float centerOffsetHorizontal = 0.5f;
@@ -98,12 +114,24 @@ public class GeofenceCircle {
         private Marker resizerMarker;
         private Circle circle;
 
+        private Builder() {}
+
         public Builder(Context context) {
             this.context = context;
         }
 
+        public Builder context(Context val) {
+            context = val;
+            return this;
+        }
+
         public Builder map(GoogleMap map) {
             this.map = map;
+            return this;
+        }
+
+        public Builder isEnabled(boolean val) {
+            isEnabled = val;
             return this;
         }
 
@@ -187,6 +215,11 @@ public class GeofenceCircle {
             return this;
         }
 
+        public Builder centerColor(int val) {
+            centerColor = val;
+            return this;
+        }
+
         public Bitmap overlay(Bitmap bmp1, Bitmap bmp2) {
             Bitmap bmOverlay = Bitmap.createBitmap(bmp1.getWidth(), bmp1.getHeight(), bmp1.getConfig());
             Canvas canvas = new Canvas(bmOverlay);
@@ -219,91 +252,76 @@ public class GeofenceCircle {
             return output;
         }
 
-        public GeofenceCircle build(){
-
-            centerMarker = map.addMarker(new MarkerOptions()
-                    .position(center)
-                    .flat(true)
-                    .anchor(centerOffsetHorizontal, centerOffsetVertical)
-                    .draggable(isEnabled));
-
-
-            resizerMarker = map.addMarker(new MarkerOptions()
-                    .position(MarkerAreasUtils.toRadiusLatLng(center, radius))
-                    .anchor(resizerOffsetHorizontal, resizerOffsetVertical)
-                    .draggable(isEnabled));
-
-            if (resizerIcon != 0 && resizerIcon != -1) {
-
-                int px = 120;
-                Bitmap mDotMarkerBitmap = Bitmap.createBitmap(px, px, Bitmap.Config.ARGB_8888);
-                Canvas canvas = new Canvas(mDotMarkerBitmap);
-                Drawable shape = ResourcesCompat.getDrawable(context.getResources(), resizerIcon, null);
-                shape.setBounds(0, 0, mDotMarkerBitmap.getWidth(), mDotMarkerBitmap.getHeight());
-                shape.draw(canvas);
-
-                resizerMarker.setIcon(BitmapDescriptorFactory.fromBitmap(mDotMarkerBitmap));
-            }
-
-
-
-            if (centerIcon != -1) {
-                BitmapDrawable bitmapDrawable = (BitmapDrawable) context.getResources().getDrawable(centerIcon);
-                Bitmap bitmap = bitmapDrawable.getBitmap();
-                Bitmap scaledBitmap = Bitmap.createScaledBitmap(bitmap, (int)(bitmap.getWidth() / 2), (int)(bitmap.getHeight() / 2), false);
-                //            centerMarker.setIcon(BitmapDescriptorFactory.fromBitmap(scaledBitmap));
-
-                int imageSize = (MetricsUtils.convertDIPsToPixels(context, 30f));
-
-                if (centerBitmap == null) {
-                    if(centerBitmapCache == null) {
-                        centerBitmap = Bitmap.createBitmap(imageSize, imageSize, Bitmap.Config.RGB_565);
-                        Drawable drawable = context.getResources().getDrawable(android.R.drawable.sym_def_app_icon);
-                        Canvas canvas = new Canvas(centerBitmap);
-                        drawable.setBounds(0, 0, canvas.getWidth(), canvas.getHeight());
-                        drawable.draw(canvas);
-                        centerBitmapCache = centerBitmap;
-                    } else {
-                        centerBitmap = centerBitmapCache;
-                    }
-
-                }
-
-//                centerMarker.setIcon(BitmapDescriptorFactory.fromBitmap(overlay(scaledBitmap, getRoundedCornerBitmap(centerBitmap, imageSize))));
-            }
-
-            circle = map.addCircle(new CircleOptions()
-                    .center(center)
-                    .radius(radius)
-                    .strokeWidth(strokeWidth)
-                    .strokeColor(strokeColor)
-                    .fillColor(fillColor));
-
+        public GeofenceCircle build() {
             return new GeofenceCircle(this);
         }
     }
 
     private GeofenceCircle(Builder b) {
-        this.context                =   b.context;
-        this.map                    =   b.map;
-        this.isEnabled              =   b.isEnabled;
-        this.center                 =   b.center;
-        this.radius                 =   b.radius;
-        this.circleId               =   b.circleId;
-        this.strokeWidth            =   b.strokeWidth;
-        this.strokeColor            =   b.strokeColor;
-        this.fillColor              =   b.fillColor;
-        this.minRadius              =   b.minRadius;
-        this.maxRadius              =   b.maxRadius;
-        this.centerIcon             =   b.centerIcon;
-        this.centerBitmap           =   b.centerBitmap;
-        this.resizerIcon            =   b.resizerIcon;
-        this.centerOffsetHorizontal =   b.centerOffsetHorizontal;
-        this.centerOffsetVertical   =   b.centerOffsetVertical;
-        this.centerMarker           =   b.centerMarker;
-        this.resizerMarker          =   b.resizerMarker;
-        this.circle                 =   b.circle;
+        this.context = b.context;
+        this.map = b.map;
+        this.isEnabled = b.isEnabled;
+        this.center = b.center;
+        this.radius = b.radius;
+        this.circleId = b.circleId;
+        this.strokeWidth = b.strokeWidth;
+        this.strokeColor = b.strokeColor;
+        this.fillColor = b.fillColor;
+        this.minRadius = b.minRadius;
+        this.maxRadius = b.maxRadius;
+        this.centerIcon = b.centerIcon;
+        this.centerBitmap = b.centerBitmap;
+        this.resizerIcon = b.resizerIcon;
+        this.centerOffsetHorizontal = b.centerOffsetHorizontal;
+        this.centerOffsetVertical = b.centerOffsetVertical;
+        this.resizerOffsetHorizontal = b.resizerOffsetHorizontal;
+        this.resizerOffsetVertical = b.resizerOffsetVertical;
+        this.centerMarker = b.centerMarker;
+        this.resizerMarker = b.resizerMarker;
+        this.circle = b.circle;
+        this.centerColor = b.centerColor;
 
+    }
+
+    public void plot() {
+
+        centerMarker = map.addMarker(new MarkerOptions()
+                .position(center)
+                .flat(true)
+                .anchor(centerOffsetHorizontal, centerOffsetVertical)
+                .draggable(isEnabled));
+
+        resizerMarker = map.addMarker(new MarkerOptions()
+                .position(MarkerAreasUtils.toRadiusLatLng(center, radius))
+                .anchor(resizerOffsetHorizontal, resizerOffsetVertical)
+                .draggable(isEnabled));
+
+        if (centerIcon != 0 && centerIcon != -1) {
+            if (centerIcon == android.R.drawable.ic_menu_mylocation) {
+
+            } else {
+                Drawable centerDrawable = ResourcesCompat.getDrawable(context.getResources(), centerIcon, null);
+                centerDrawable.setColorFilter(centerColor, PorterDuff.Mode.SRC_IN);
+                centerMarker.setIcon(BitmapDescriptorFactory.fromBitmap(((BitmapDrawable) centerDrawable).getBitmap()));
+            }
+        }
+
+        if (resizerIcon != 0 && resizerIcon != -1) {
+            int px = 120;
+            Bitmap mDotMarkerBitmap = Bitmap.createBitmap(px, px, Bitmap.Config.ARGB_8888);
+            Canvas canvas = new Canvas(mDotMarkerBitmap);
+            Drawable shape = ResourcesCompat.getDrawable(context.getResources(), resizerIcon, null);
+            shape.setBounds(0, 0, mDotMarkerBitmap.getWidth(), mDotMarkerBitmap.getHeight());
+            shape.draw(canvas);
+            resizerMarker.setIcon(BitmapDescriptorFactory.fromBitmap(mDotMarkerBitmap));
+        }
+
+        circle = map.addCircle(new CircleOptions()
+                .center(center)
+                .radius(radius)
+                .strokeWidth(strokeWidth)
+                .strokeColor(strokeColor)
+                .fillColor(fillColor));
     }
 
     public void setCenter(LatLng center) {
@@ -312,22 +330,21 @@ public class GeofenceCircle {
     }
 
     public void removeArea() {
-        if(resizerMarker != null) resizerMarker.remove();
-        if(centerMarker != null) centerMarker.remove();
-        if(circle != null) circle.remove();
+        if (resizerMarker != null) resizerMarker.remove();
+        if (centerMarker != null) centerMarker.remove();
+        if (circle != null) circle.remove();
     }
 
 
     /**
      * This modifies circle according to marker's type and position
-     *
+     * <p>
      * if the marker is position marker (from this circle), the circle will be moved according to marker's position
      * if the marker is resizing marker (from this circle), the circle will be resized according to marker's position
-     *
+     * <p>
      * If the marker is not in this circle (it's not the position or resizing marker) no action will be done
      *
      * @param marker
-     *
      * @return flag indicating which action was done.
      * When the marker is not in this circle returned action is MarkerMoveResult.none
      */
@@ -348,7 +365,6 @@ public class GeofenceCircle {
 
             } else {
                 setRadius(newRadius);
-
                 return MarkerMoveResult.radiusChange;
             }
 
@@ -356,15 +372,15 @@ public class GeofenceCircle {
         return MarkerMoveResult.none;
     }
 
-
-
     /**
      * Called after update position of center marker, to update the circle and the radius marker
+     *
      * @param center
      */
     public void onCenterUpdated(LatLng center) {
-        if(circle != null) circle.setCenter(center);
-        if(resizerMarker != null) resizerMarker.setPosition(MarkerAreasUtils.toRadiusLatLng(center, radius));
+        if (circle != null) circle.setCenter(center);
+        if (resizerMarker != null)
+            resizerMarker.setPosition(MarkerAreasUtils.toRadiusLatLng(center, radius));
     }
 
     /**
@@ -375,7 +391,9 @@ public class GeofenceCircle {
      */
     public void setRadius(double radius) {
         this.radius = radius;
-        circle.setRadius(radius);
+        if (circle != null) {
+            circle.setRadius(radius);
+        }
     }
 
     public LatLng getCenter() {
@@ -386,7 +404,9 @@ public class GeofenceCircle {
         return radius;
     }
 
-
+    public long getCircleId() {
+        return circleId;
+    }
 
     @Override
     public String toString() {

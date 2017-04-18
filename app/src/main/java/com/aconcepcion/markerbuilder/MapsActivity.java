@@ -68,9 +68,10 @@ public class MapsActivity extends FragmentActivity implements OnMapClickListener
         markerBuilderManager = new MarkerBuilderManagerV2.Builder(this)
                 .map(mMap)
                 .enabled(true)
-                .radius(200)
                 .fillColor(Color.BLUE)
                 .build();
+
+        markerBuilderManager.markThis(new LatLng(3, 3), true, Color.CYAN, Color.YELLOW);
     }
 
     @Override

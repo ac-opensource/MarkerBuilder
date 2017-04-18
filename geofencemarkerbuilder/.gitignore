@@ -1,1 +1,14 @@
-/build
+.DS_Store
+*.iml
+
+/.gradle/
+/local.properties
+build/
+
+/.idea/
+/build/
+/app/build/
+crashlytics-build.properties
+/app/fabric.properties
+/projectFilesBackup/
+/infer-out/
