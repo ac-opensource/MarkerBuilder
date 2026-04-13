@@ -1,73 +1,67 @@
 # MarkerBuilder
-Versatile map area / geofence utility for google maps v2 for android.
-Create geofence areas in your map by initializing markerBuilderManager.
-Not that difficult isn't it?
 
-![Marker Demo](https://cloud.githubusercontent.com/assets/7637791/11803625/9a6946b2-a337-11e5-96d2-36a908f8aa8c.png)
+MarkerBuilder is now a modern Android sample and reusable library for building draggable geofence circles on Google Maps with Jetpack Compose and the latest Maps Compose API.
 
-Usage
-------
-```java
-private void setUpMap() {
-  markerBuilderManager = new MarkerBuilderManagerV2.Builder(this)
-          .map(mMap) // required
-          .build();
-}
+## What's new
+
+- Android Gradle Plugin `8.13.2` with Gradle `8.14.4`
+- Kotlin `2.2.21`
+- Jetpack Compose UI app sample
+- Google Maps Compose `8.3.0`
+- Kotlin-first geofence state manager with unit tests
+- Removed deprecated support libraries, legacy map fragments, and obsolete permissions
+
+## Project structure
+
+- `app`: a Compose demo app that renders circles and draggable handles with `GoogleMap`
+- `geofencemarkerbuilder`: a reusable state manager and geometry utilities for draft and saved geofence circles
+
+## Running the sample
+
+1. Install Android SDK 36 or later.
+2. Add a Google Maps key to `local.properties`:
+
+```properties
+MAPS_API_KEY=YOUR_API_KEY
 ```
 
-You can also set other marker options such as:
-```java
-  markerBuilderManager = new MarkerBuilderManagerV2.Builder(this)
-          .map(googleMap)
-          .enabled(isEnabled)
-          .radius(initRadiusMetersFinal)
-          .circleId(circleId)
-          .strokeWidth(strokeWidth)
-          .strokeColor(strokeColor)
-          .fillColor(fillColor)
-          .minRadius(minRadius)
-          .maxRadius(maxRadius)
-          .centerIcon(centerIcon)
-          .centerBitmap(centerBitmap)
-          .resizerIcon(resizerIcon)
-          .centerOffsetHorizontal(centerOffsetHorizontal)
-          .centerOffsetVertical(centerOffsetVertical)
-          .build();
+3. Build the project:
+
+```bash
+./gradlew testDebugUnitTest assembleDebug
 ```
 
-Configuration
-------
-There is no pre-configuration needed. :)
+## Compose sample behavior
 
-Download
-------
-Add the following code to your `build.gradle` file (as described on [JitPack])
+- Tap anywhere on the map to create a draft circle.
+- Drag the center marker to move the circle.
+- Drag the resize handle to change the radius.
+- Seed saved circles with the bottom sheet action to test multiple overlays.
+- Lock marker editing from the top bar to inspect without changing geometry.
+
+## Library usage
+
+```kotlin
+val manager = MarkerBuilderManagerV2.Builder()
+    .enabled(true)
+    .radius(220.0)
+    .minRadius(50)
+    .maxRadius(1500)
+    .build()
+
+manager.markThis(point = LatLng(14.5995, 120.9842), isSaved = false)
+manager.plotPoints(
+    point = LatLng(14.6080, 120.9822),
+    radius = 280,
+    circularGeofenceId = 1001L,
+    fillColor = 0x334CAF50.toInt(),
+)
 ```
-repositories {
-    maven {
-        url "https://jitpack.io"
-    }
-}
-dependencies {
-    compile 'com.github.ac-opensource:MarkerBuilder:v1.0.8'
-}
-```
 
-License
--------
+Collect `manager.uiState` from Compose or any other UI layer to render circles and marker handles.
 
-    Copyright 2015 A-Ar Andrew Concepcion
+## License
 
-    Licensed under the Apache License, Version 2.0 (the "License");
-    you may not use this file except in compliance with the License.
-    You may obtain a copy of the License at
+Copyright 2015 A-Ar Andrew Concepcion
 
-       http://www.apache.org/licenses/LICENSE-2.0
-
-    Unless required by applicable law or agreed to in writing, software
-    distributed under the License is distributed on an "AS IS" BASIS,
-    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-    See the License for the specific language governing permissions and
-    limitations under the License.
-    
-[JitPack]:https://jitpack.io/#ac-opensource/MarkerBuilder/v1.0.0
+Licensed under the Apache License, Version 2.0.

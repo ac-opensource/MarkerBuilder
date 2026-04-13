@@ -1,4 +1,20 @@
 <resources>
     <string name="app_name">Marker Builder</string>
-    <string name="title_activity_maps">Sample Map</string>
+    <string name="map_title">Marker Builder</string>
+    <string name="map_subtitle">Tap the map to create a draft geofence. Drag the center marker or resize handle to adjust it.</string>
+    <string name="maps_api_key_missing">Add a Google Maps key in local.properties as MAPS_API_KEY or via the MAPS_API_KEY environment variable.</string>
+    <string name="clear_draft">Clear draft</string>
+    <string name="clear_saved">Clear saved</string>
+    <string name="remove_selected">Remove selected</string>
+    <string name="seed_saved_circle">Seed saved circle</string>
+    <string name="lock_markers">Lock markers</string>
+    <string name="unlock_markers">Unlock markers</string>
+    <string name="selected_circle">Selected circle</string>
+    <string name="no_selection">Tap a circle handle to inspect its state.</string>
+    <string name="draft_circle">Draft circle</string>
+    <string name="saved_circle">Saved circle</string>
+    <string name="circle_center">Center</string>
+    <string name="circle_radius">Radius</string>
+    <string name="saved_count">Saved</string>
+    <string name="draft_count">Draft</string>
 </resources>
